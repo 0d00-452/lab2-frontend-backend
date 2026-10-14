@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  实验二：前后端分离与 RESTful API —— 后端工程（独立部署）
+  ============================================================================
+  和实验一的后端相比，pom 本身没有变化，变的是「它现在要跨域给前端调用」。
+  真正的实验二内容是：
+    1. config/WebConfig.java    ← CORS 配置（本实验核心）
+    2. controller 用标准 HTTP 状态码（201 / 404 / 409）
+    3. 前端是另一个独立工程（frontend/），用 Vue + Axios 调这些接口
+  ============================================================================
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.4.4</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.example</groupId>
+  <artifactId>lab2-backend</artifactId>
+  <version>1.0.0</version>
+  <name>lab2-backend</name>
+  <description>实验二：前后端分离 —— 后端 RESTful API</description>
+
+  <properties>
+    <java.version>17</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <mybatis-starter.version>3.0.4</mybatis-starter.version>
+    <!-- 本机离线仓库限制：3.13.0 依赖的 plexus-compiler 2.15.0 只有 pom 没有 jar -->
+    <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
+  </properties>
+
+  <dependencies>
+    <!-- Web：内嵌 Tomcat + Spring MVC -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <!-- 持久层：MyBatis -->
+    <dependency>
+      <groupId>org.mybatis.spring.boot</groupId>
+      <artifactId>mybatis-spring-boot-starter</artifactId>
+      <version>${mybatis-starter.version}</version>
+    </dependency>
+
+    <!-- 数据库：H2 内存库（默认） + MySQL 驱动（可选 profile） -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <version>8.3.0</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+      </plugin>
+    </plugins>
+  </build>
+</project>

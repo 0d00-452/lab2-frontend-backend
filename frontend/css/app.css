@@ -1,0 +1,126 @@
+/* =============================================================================
+ *  app.css —— 样式。与实验二的知识点无关，扫一眼即可。
+ * ========================================================================== */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+  background: #f4f6f9;
+  color: #222;
+  line-height: 1.6;
+}
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: 24px 16px 60px; }
+
+.head h1 { font-size: 22px; margin: 0 0 6px; }
+.head .sub { margin: 2px 0; color: #5b6b7f; font-size: 14px; }
+
+.card {
+  background: #fff;
+  border: 1px solid #e3e6ea;
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+
+.card h2 { font-size: 15px; margin: 0 0 12px; color: #2c3e50; }
+
+.card.note { background: #f7fbff; border-color: #cfe4fb; }
+.card.note p { margin: 8px 0; font-size: 14px; }
+
+code {
+  background: #eef1f6;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13px;
+  color: #c7254e;
+}
+
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+input {
+  padding: 7px 10px;
+  border: 1px solid #ccd2dd;
+  border-radius: 5px;
+  font-size: 14px;
+  min-width: 150px;
+}
+
+input:focus { outline: 2px solid #a9c9f5; border-color: #2f6fed; }
+
+button {
+  padding: 7px 15px;
+  border: 0;
+  border-radius: 5px;
+  background: #2f6fed;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+button:hover { opacity: .9; }
+button:disabled { background: #a9b6c8; cursor: not-allowed; }
+button.gray { background: #7a8698; }
+button.danger { background: #d64545; padding: 4px 10px; font-size: 13px; }
+button.link {
+  background: none;
+  color: #2f6fed;
+  padding: 0 0 0 8px;
+  text-decoration: underline;
+  font-size: 13px;
+}
+
+table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+th, td { padding: 9px 8px; border-bottom: 1px solid #eceff3; text-align: left; font-size: 14px; }
+th { background: #f2f5fa; font-weight: 600; color: #445; }
+td.dim { color: #889; font-size: 13px; }
+td.empty { text-align: center; color: #99a; padding: 20px; }
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: #fff;
+}
+.badge-ok { background: #2e9e5b; }
+.badge-bad { background: #d64545; }
+
+.msg { font-size: 14px; margin: 8px 0 0; }
+.msg.err { color: #c02a2a; }
+.msg.ok { color: #22803f; }
+.msg.big { padding: 12px 16px; background: #fff2f2; border: 1px solid #f3c9c9; border-radius: 8px; }
+
+.tip { color: #6b7a8d; font-size: 13px; margin: 10px 0 0; }
+
+.logs { list-style: none; margin: 0; padding: 0; }
+.logs li { padding: 7px 0; border-bottom: 1px dashed #e8ecf1; font-size: 13px; }
+.logs .time { color: #93a1b3; margin-right: 8px; font-family: Consolas, monospace; }
+.logs .tag {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 4px;
+  color: #fff;
+  margin-right: 8px;
+  font-size: 12px;
+}
+.tag-req { background: #2f6fed; }
+.tag-ok { background: #2e9e5b; }
+.tag-bad { background: #d64545; }
+.logs .text { font-family: Consolas, "Courier New", monospace; }
+.logs details { margin: 6px 0 0 24px; }
+.logs summary { cursor: pointer; color: #6b7a8d; }
+.logs pre {
+  background: #1f2430;
+  color: #b9f18d;
+  padding: 10px;
+  border-radius: 6px;
+  overflow: auto;
+  max-height: 200px;
+  font-size: 12px;
+  margin: 6px 0 0;
+}
+
+.foot { text-align: center; color: #8b98a9; font-size: 13px; margin-top: 24px; }

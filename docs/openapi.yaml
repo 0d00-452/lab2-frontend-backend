@@ -1,0 +1,343 @@
+# =============================================================================
+#  实验二 · 用户管理接口文档（OpenAPI 3.0）
+# =============================================================================
+#  这份文档由 AI 生成初稿，然后**逐字段人工核对过**与代码是否一致，
+#  核对过程与发现的问题见同目录的「AI生成内容核对记录.md」。
+#
+#  怎么用：
+#    1) 打开 https://editor.swagger.io/ ，把本文件内容粘进去，就能看到可交互的接口文档
+#    2) 或者按本文件的定义逐条手工测试（新手必读.md 第二节有命令）
+#
+#  核对基准（以代码为准，不是以本文档为准）：
+#    - 路由与状态码：backend/.../controller/UserController.java
+#    - 字段与类型  ：backend/.../entity/User.java
+#    - 数据库列    ：backend/src/main/resources/db/schema.sql
+#    - 错误码含义  ：backend/.../common/BizException.java
+# =============================================================================
+openapi: 3.0.3
+
+info:
+  title: 实验二 · 用户管理 API
+  version: 1.0.0
+  description: |
+    前后端分离实验的后端接口。
+
+    **统一响应体**：所有接口都返回同一个结构
+
+    ```json
+    { "code": 0, "message": "success", "data": { } }
+    ```
+
+    - `code = 0` 表示成功，非 0 表示失败
+    - 失败时 `data` 为 `null`，`message` 是可以直接展示给用户的中文提示
+
+    **两套「状态」同时存在，别搞混**：
+    - **HTTP 状态码**（200 / 201 / 400 / 404 / 409）在响应行里，给程序判断用
+    - **业务 code** 在响应体里，给业务逻辑用
+
+  contact:
+    name: 课程实验项目
+
+servers:
+  - url: http://localhost:8081
+    description: 本地开发环境（后端独立部署）
+
+tags:
+  - name: 系统
+    description: 健康检查
+  - name: 用户
+    description: 用户资源的增删改查
+
+paths:
+  /api/health:
+    get:
+      tags: [系统]
+      summary: 健康检查
+      description: 前端启动时先调它，用来确认后端是否可用。不需要任何参数。
+      responses:
+        '200':
+          description: 后端正常
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            example: UP
+                          service:
+                            type: string
+                            example: lab2-backend
+                          time:
+                            type: string
+                            example: '2026-10-14T21:09:39.455'
+
+  /api/users:
+    get:
+      tags: [用户]
+      summary: 查询用户列表
+      parameters:
+        - name: keyword
+          in: query
+          required: false
+          description: 按用户名或邮箱模糊搜索；不传则返回全部
+          schema:
+            type: string
+          example: zhang
+      responses:
+        '200':
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/User'
+
+    post:
+      tags: [用户]
+      summary: 新增用户
+      description: |
+        成功时返回 **201 Created**，并在 `Location` 响应头里给出新资源的地址，
+        例如 `Location: /api/users/4`。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+            example:
+              username: zhaoliu
+              password: '123456'
+              email: zhaoliu@example.com
+              phone: '13900000009'
+      responses:
+        '201':
+          description: 创建成功
+          headers:
+            Location:
+              description: 新资源的地址
+              schema:
+                type: string
+                example: /api/users/4
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /api/users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: 用户主键
+        schema:
+          type: integer
+          format: int64
+        example: 1
+
+    get:
+      tags: [用户]
+      summary: 查询单个用户
+      responses:
+        '200':
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [用户]
+      summary: 修改用户资料
+      description: 只能改邮箱和手机号；用户名与密码改动各走各的流程，不在此接口。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                phone:
+                  type: string
+            example:
+              email: new@example.com
+              phone: '13700000000'
+      responses:
+        '200':
+          description: 修改成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [用户]
+      summary: 删除用户（逻辑删除）
+      description: |
+        实际执行的是 `UPDATE sys_user SET deleted = 1`，数据仍在表里。
+        成功返回 200 与剩余用户数，便于前端刷新计数。
+      responses:
+        '200':
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          deletedId:
+                            type: integer
+                            format: int64
+                            example: 2
+                          remaining:
+                            type: integer
+                            example: 3
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+
+  schemas:
+
+    ApiResponse:
+      type: object
+      description: 统一响应体
+      properties:
+        code:
+          type: integer
+          description: 0 = 成功；1xxxx 参数错误；3xxxx 业务错误；5xxxx 服务端错误
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          nullable: true
+
+    User:
+      type: object
+      description: 用户（响应中 password 恒为 null，不返回给前端）
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        username:
+          type: string
+          example: zhangsan
+        password:
+          type: string
+          nullable: true
+          description: 响应中始终为 null；真实项目应改用不含该字段的 VO 类型
+        email:
+          type: string
+          nullable: true
+          example: zhangsan@example.com
+        phone:
+          type: string
+          nullable: true
+          example: '13800000001'
+        deleted:
+          type: integer
+          description: 逻辑删除标记，0 = 正常，1 = 已删除。查询结果里只会出现 0
+          example: 0
+        createdAt:
+          type: string
+          format: date-time
+          description: 创建时间，由数据库生成
+          example: '2026-10-14T21:07:14.123'
+
+    UserInput:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          description: 用户名，必填且不能重复
+          example: zhaoliu
+        password:
+          type: string
+          description: 密码，必填（本实验为明文存储，实验四会改为 BCrypt）
+          example: '123456'
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+
+  responses:
+
+    BadRequest:
+      description: '参数不合法（HTTP 400，业务码 10001）'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          example:
+            code: 10001
+            message: 用户名不能为空
+            data: null
+
+    NotFound:
+      description: '资源不存在（HTTP 404，业务码 30003）'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          example:
+            code: 30003
+            message: 用户不存在：id=9999
+            data: null
+
+    Conflict:
+      description: '资源冲突（HTTP 409，业务码 30002）'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          example:
+            code: 30002
+            message: 用户名已存在：zhangsan
+            data: null
+
+  securitySchemes: {}

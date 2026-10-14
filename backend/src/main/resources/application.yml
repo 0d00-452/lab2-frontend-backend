@@ -1,0 +1,63 @@
+# =============================================================================
+#  实验二 后端配置
+#  注意端口是 8081（实验一用的是 8080）—— 两个实验可以同时跑，互不打扰
+# =============================================================================
+server:
+  port: 8081
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
+spring:
+  application:
+    name: lab2-backend
+
+  # 数据源：默认 H2 内存库，启动自动建表（无需安装数据库）
+  datasource:
+    url: jdbc:h2:mem:lab2;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ''
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
+      data-locations: classpath:db/data.sql
+      encoding: UTF-8
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.lab2.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+# 打印真实 SQL，方便对着前端点的按钮看后端做了什么
+logging:
+  level:
+    com.example.lab2.mapper: debug
+    root: INFO
+  pattern:
+    console: "%d{HH:mm:ss.SSS} %-5level %logger{25} - %msg%n"
+
+---
+# =============================================================================
+#  可选：切到本机 MySQL（.\run.ps1 -Profile mysql）
+# =============================================================================
+spring:
+  config:
+    activate:
+      on-profile: mysql
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/lab2?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:root}
+  sql:
+    init:
+      mode: always
+      continue-on-error: true

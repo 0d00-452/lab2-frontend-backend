@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>实验二 · 前后端分离与 RESTful API</title>
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+  <!-- ========================================================================
+       ⚠ 这里有个非常重要的顺序问题（很多人第一次都会白屏）
+
+       Vue 的 mount('#app') 必须能找到 <div id="app">。
+       如果把 <script> 写在 <head> 里，浏览器解析到它时立刻执行，
+       而那时 <body> 还没被解析，页面上根本还没有 #app 这个元素 ——
+       于是 mount 找不到目标，页面就是一片空白
+       （正式版 Vue 不打印警告，所以连报错都看不到，最难查）。
+
+       正确做法有两种，本项目两种都做了：
+         ① 把 <script> 放到 <body> 最末尾（下面的写法）—— 最经典；
+         ② main.js 里再等一次 DOMContentLoaded —— 双保险。
+
+       ⚠ 顺序同样重要：必须先加载「库」，再加载「用库的代码」，
+          否则会报 "Vue is not defined"。
+           1. Vue 3        （本机离线，取自本机 WPS Office 自带资源，MIT 许可）
+           2. axios 兼容层 （本机离线装不了官方 axios，用 axios-lite.js 顶上）
+           3. api.js       用 axios 建实例、挂拦截器、列出所有接口
+           4. 组件         可以先写的放前面，App 必须最后（它要用到其他组件）
+           5. main.js      创建应用并挂载
+       ======================================================================== -->
+
+  <!-- Vue 会把 App 组件渲染到这个 div 里 -->
+  <div id="app"></div>
+
+  <script src="lib/vue.global.prod.js"></script>
+  <script src="lib/axios-lite.js"></script>
+
+  <script src="js/api.js"></script>
+  <script src="js/components/UserForm.js"></script>
+  <script src="js/components/UserTable.js"></script>
+  <script src="js/components/ApiLog.js"></script>
+  <script src="js/components/App.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>
